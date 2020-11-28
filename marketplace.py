@@ -86,6 +86,8 @@ def login(creds):
 def postAd(browser, directory):
     title, price, description = getAdInformation(directory)
 
+    print("Posting ad for \"%s\"" % title)
+
     # Allow page to load
     time.sleep(longSleep)
 
@@ -204,7 +206,13 @@ def main():
 
         # Retrieve the name of each ad folder
         ads = getAds()
-
+        
+        if len(ads) == 0:
+            print("No ads detected.")
+            return
+        else:
+            print("Detected %d ads." % len(ads))
+            
         # For each ad folder, post the ad
         # Make this a separate function probably soon
         for directory in ads:
@@ -214,6 +222,7 @@ def main():
             except:
                 # If something goes wrong with the ad, clicking an element, or anything else
                 # Just restart and go to the next ad
+                print("Failed to post an ad")
                 browser.refresh()
                 time.sleep(longSleep)
 
