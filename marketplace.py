@@ -72,7 +72,7 @@ def login(creds):
     # Login by finding the correct fields by ID
     browser.find_element_by_id('email').send_keys(creds[0])
     browser.find_element_by_id("pass").send_keys(creds[1])
-    browser.find_element_by_id('loginbutton').click()
+    browser.find_element_by_id('u_0_b').click()
 
     # Wait for page load
     time.sleep(longSleep)
