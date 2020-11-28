@@ -190,12 +190,14 @@ def main():
 
         # Find and click the marketplace button by ID
         # Allow page to load
-        browser.find_element_by_id('navItem_1606854132932955').click()
+        #browser.find_element_by_id('navItem_1606854132932955').click()
+        browser.get("https://www.facebook.com/marketplace/?ref=bookmark")
         time.sleep(5)
 
         # Click the "Selling" button, to take us to the selling page
-        path = '/html/body/div[1]/div[3]/div[1]/div/div/div[1]/div/div/div/div[2]/div/a[3]'
-        browser.find_element_by_xpath(path).click()
+        #path = '/html/body/div[1]/div[3]/div[1]/div/div/div[1]/div/div/div/div[2]/div/a[3]'
+        #browser.find_element_by_xpath(path).click()
+        browser.get("https://www.facebook.com/marketplace/create/")
 
         # Here is where we could get it to automatically delete all ads we currently have listed
         # Currently must be done by hand
