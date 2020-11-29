@@ -1,8 +1,10 @@
+# Marketplace specific files
 login.txt
 geckodriver
 geckodriver.exe
 geckodriver.log
 ads/
+cookies/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

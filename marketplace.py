@@ -3,7 +3,11 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 import time
 import os
 import pyautogui
+import pickle
 pyautogui.FAILSAFE = True
+
+# Settings
+USE_COOKIES = True
 
 # These are some global sleep variables, for each of the expected sleep times
 # May need to be changed depending how fast or slow a persons computer is
@@ -60,10 +64,7 @@ def getAds():
     ads = os.listdir(ads)
     return ads
 
-# Logs us into facebook
-# Returns the browser object
-def login(creds):
-
+def openBrowser():
     # Init the browser, in this case firefox
     # Take us to facebook.com and maximize the window
     # Checks for local geckodriver executable first
@@ -73,8 +74,18 @@ def login(creds):
     else:
         browser = webdriver.Firefox()
 
+    return browser
+
+
+
+# Logs us into facebook
+# Returns the browser object
+def login(creds, browser):
+    if browser == None:
+        browser = openBrowser()
+
     browser.maximize_window()
-    browser.get('http://facebook.com')
+    browser.get('https://www.facebook.com')
 
     # Login by finding the correct fields by ID
     browser.find_element_by_id('email').send_keys(creds[0])
@@ -88,6 +99,24 @@ def login(creds):
     pyautogui.press('escape')
     time.sleep(shortSleep)
     return browser
+
+def loginWithCookies(creds, cookies):
+    browser = openBrowser()
+    
+    browser.get('https://www.facebook.com/favicon.ico')
+    
+    for cookie in cookies:
+        browser.add_cookie(cookie)
+
+    browser.get('https://www.facebook.com/friends')
+    time.sleep(longSleep)
+
+    # Check if cookie usage resulted in a login
+    if 'login' in browser.current_url:
+        login(creds, browser)
+
+    return browser
+    
 
 # Post the ad
 def postAd(browser, directory):
@@ -188,14 +217,45 @@ def postAd(browser, directory):
     browser.refresh()
     time.sleep(longSleep)
 
+def saveCookies(browser, creds):
+    cookies = browser.get_cookies()
 
+    badFileChars = ['//', '*', '|', '?', '*']
+    fileName = creds[0]
+    for char in badFileChars:
+        fileName.replace(char, '')
+
+    path = os.getcwd() + "/cookies"
+    if not os.path.isdir(path):
+        os.mkdir(path)
+
+    pickle.dump(cookies, open("cookies/%s.pkl" % fileName, "wb"))
+
+def loadCookies(creds):
+    badFileChars = ['//', '*', '|', '?', '*']
+    fileName = creds[0]
+    for char in badFileChars:
+        fileName.replace(char, '')
+  
+    try:
+        cookies = pickle.load(open("cookies/%s.pkl" % fileName, "rb"))
+    except:
+        cookies = []
+        print("Failed to load cookies for %s", creds[0])
+
+    return cookies 
 
 def main():
 
     credentials = getCredentials()
     # For each username/password provided, post all the ads
     for creds in credentials:
-        browser = login(creds)
+        
+        if USE_COOKIES:
+            cookies = loadCookies(creds)
+            browser = loginWithCookies(creds, cookies)
+        else:
+            browser = login(creds)
 
         # Find and click the marketplace button by ID
         # Allow page to load
@@ -236,9 +296,12 @@ def main():
         # Here we could either logout and login on the new account
         # But for now we will just close the browser and open a new one and start over
         # Closing a browser shouldn't need a longSleep, but who knows
+        if USE_COOKIES:
+            saveCookes(browser, creds)
         browser.close()
         time.sleep(shortSleep)
 
     print("All ads posted on all accounts, safe to close windows and stuff")
 
 main()
+
