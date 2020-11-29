@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+from cookies import loadCookies, saveCookies
 import time
 import os
 import pyautogui
@@ -217,34 +218,6 @@ def postAd(browser, directory):
     browser.refresh()
     time.sleep(longSleep)
 
-def saveCookies(browser, creds):
-    cookies = browser.get_cookies()
-
-    badFileChars = ['//', '*', '|', '?', '*']
-    fileName = creds[0]
-    for char in badFileChars:
-        fileName.replace(char, '')
-
-    path = os.getcwd() + "/cookies"
-    if not os.path.isdir(path):
-        os.mkdir(path)
-
-    pickle.dump(cookies, open("cookies/%s.pkl" % fileName, "wb"))
-
-def loadCookies(creds):
-    badFileChars = ['//', '*', '|', '?', '*']
-    fileName = creds[0]
-    for char in badFileChars:
-        fileName.replace(char, '')
-  
-    try:
-        cookies = pickle.load(open("cookies/%s.pkl" % fileName, "rb"))
-    except:
-        cookies = []
-        print("Failed to load cookies for %s", creds[0])
-
-    return cookies 
-
 def main():
 
     credentials = getCredentials()
@@ -297,7 +270,7 @@ def main():
         # But for now we will just close the browser and open a new one and start over
         # Closing a browser shouldn't need a longSleep, but who knows
         if USE_COOKIES:
-            saveCookes(browser, creds)
+            saveCookies(browser, creds)
         browser.close()
         time.sleep(shortSleep)
 
