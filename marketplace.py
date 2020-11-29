@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 import time
 import os
 import pyautogui
@@ -65,7 +66,13 @@ def login(creds):
 
     # Init the browser, in this case firefox
     # Take us to facebook.com and maximize the window
-    browser = webdriver.Firefox()  # (executable_path='geckodriver')
+    # Checks for local geckodriver executable first
+    if os.path.exists("geckodriver"):
+        localLinuxPath = os.path.abspath('geckodriver')
+        browser = webdriver.Firefox(executable_path=localLinuxPath)
+    else:
+        browser = webdriver.Firefox()
+
     browser.maximize_window()
     browser.get('http://facebook.com')
 
