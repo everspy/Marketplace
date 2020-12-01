@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from cookies import loadCookies, saveCookies
+from localfilehandlers import * 
 import time
 import os
 import pyautogui
@@ -19,51 +20,6 @@ shortSleep = 0.2
 
 # For all other loading, including file uploads, page refreshes or reloads, etc.
 longSleep = 5
-
-
-
-# This will get the username and password from a text file
-# Supports multiple logins, line separated
-# Returns list of username,password
-def getCredentials():
-
-    # Open/read the file
-    file = open("login.txt")
-    file = file.read().splitlines()
-    creds = []
-    for credentials in file:
-        credentials = credentials.split(", ")
-        creds.append([credentials[0], credentials[1]])
-    return creds
-
-# This will retrieve the relevant info for the ad posting
-# Returns title, price, description
-def getAdInformation(directory):
-
-    title, price, description = open("ad/"+directory+"/Ad.txt").read().split("\n", 2)
-    return title, price, description
-
-# This will return the absolute path to all images
-# Returns a list of absolute paths to images
-def getAdImagePaths(directory):
-    ads = os.getcwd() + "/ads/" + directory
-    files = os.listdir(ads)
-
-    # We will go through this list and remove the hidden files as well as Ad.txt
-    # This will assume all remaining files are images so make sure they are!
-    # Otherwise bad things might happen
-    images = []
-    for file in files:
-        if file[0] != "." and file != "Ad.txt":
-            images.append(ads + "/" + file)
-    return images
-
-# This retrieves the directory name of each ad
-# Returns list of ad folder names
-def getAds():
-    ads = os.getcwd() + "/ads/"
-    ads = os.listdir(ads)
-    return ads
 
 def openBrowser():
     # Init the browser, in this case firefox
@@ -128,14 +84,19 @@ def postAd(browser, directory):
     # Allow page to load
     time.sleep(longSleep)
 
-    # Click the "Sell Something" button by using the absolute path to the element
+    # OLD Click the "Sell Something" button by using the absolute path to the element
     # Allow page to load
-    browser.find_element_by_xpath('/html/body/div[1]/div[3]/div[1]/div/div/div[1]/div/div/div/button').click()
-    time.sleep(longSleep)
+    # browser.find_element_by_xpath('/html/body/div[1]/div[3]/div[1]/div/div/div[1]/div/div/div/button').click()
+    # time.sleep(longSleep)
 
-    # Click the "Item for Sale" button using the link text
+    #browser.find_element_by_xpath('/html/body/div[1]/div/div[1]/div[1]/div[4]/div/div/div[1]/div/div[3]/div[2]/div[2]/div/div/div[2]/div[1]/span/div/a')
+
+    # OLD Click the "Item for Sale" button using the link text
     # Allow page to load
-    browser.find_element_by_link_text("Item for Sale").click()
+    #browser.find_element_by_link_text("Item for Sale").click()
+    #time.sleep(longSleep)
+
+    browser.get('https://www.facebook.com/marketplace/create/item')
     time.sleep(longSleep)
 
     # Click the category field by using the absolute path
