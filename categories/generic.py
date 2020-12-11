@@ -23,6 +23,12 @@ class Generic:
         'description': 2,
     }
 
+    class Condition():
+        new = 0
+        like_new = 1
+        good = 2
+        fair = 3
+
     # Finds the ID of the title section. The offsets are based off of this id.
     # Example id jsc_c_##
     def find_base(self, browser):
@@ -77,14 +83,14 @@ class Generic:
         #dropdown
         #xpath = '/html/body/div[1]/div/div[1]/div[1]/div[4]/div/div[2]/div[1]/div/div[3]/div[2]/div[1]/div/div[4]/div[1]/div[2]/div/div/div[5]/div/div/div/div/div/div/label/div/div[1]'
         id = self.get_id('category')
-        select_dropdown(browser, id, selection, "Category")
+        select_search_dropdown(browser, id, selection, "Category")
 
     #+2
-    def condition(self, browser, selection):
+    def condition(self, browser, condition):
         #searchable dropdown
         #xpath = '/html/body/div[1]/div/div[1]/div[1]/div[4]/div/div[2]/div[1]/div/div[3]/div[2]/div[1]/div/div[4]/div[1]/div[2]/div/div/div[6]/div/div/div/label/div/div[1]'
         id = self.get_id('condition')
-        select_dropdown(browser, id, selection, 'Condition')
+        select_dropdown(browser, id, condition, 'Condition')
     #+2 
     def description(self, browser, description):
         #xpath = '/html/body/div[1]/div/div[1]/div[1]/div[4]/div/div[2]/div[1]/div/div[3]/div[2]/div[1]/div/div[4]/div[1]/div[2]/div/div/div[7]/div/div/label/div/div'
@@ -116,6 +122,21 @@ def fill_textbox(browser, id, text, assertLabel):
 
     textbox.send_keys(text)
 
+def select_search_dropdown(browser, id, selection, assertLabel):
+    selectBox = browser.find_element_by_id(id)
+    #containerDiv = browser.find_element_by_xpath(xpath)
+    #divChildren = containerDiv.find_elements_by_xpath(".//*")
+
+    if(assertLabel != None):
+        parent = selectBox.find_element_by_xpath("./..")
+        label = parent.find_elements_by_css_selector("*")[0]
+        assert(label.text == assertLabel)
+        print("Selecting", selection, " in ", assertLabel)
+
+    selectBox.send_keys(selection)
+    selectBox.send_keys(Keys.UP)
+    selectBox.send_keys(Keys.ENTER)
+
 def select_dropdown(browser, id, selection, assertLabel):
     selectBox = browser.find_element_by_id(id)
     #containerDiv = browser.find_element_by_xpath(xpath)
@@ -127,6 +148,7 @@ def select_dropdown(browser, id, selection, assertLabel):
         assert(label.text == assertLabel)
         print("Selecting", selection, " in ", assertLabel)
 
+    #TODO: Select box using up/down arrows to find correct position
     selectBox.send_keys(selection)
     selectBox.send_keys(Keys.UP)
     selectBox.send_keys(Keys.ENTER)
